@@ -1,0 +1,22 @@
+{
+  "pipeline_type": "two_stage",
+  "description": "Stage 1: Binary voting ensemble (RF+XGB+MLP) detects BENIGN vs ATTACK. Stage 2: XGBoost multi-class identifies specific attack type among 15 classes.",
+  "stage_1": {
+    "type": "binary_voting_ensemble",
+    "models": ["rf_model.pkl", "xgb_model.pkl", "mlp_model.keras"],
+    "strategy": "soft_voting_average",
+    "threshold": 0.50,
+    "classes": ["BENIGN", "ATTACK"]
+  },
+  "stage_2": {
+    "type": "multiclass_xgboost",
+    "model": "multiclass_xgb.pkl",
+    "num_classes": 15,
+    "label_mapping_file": "label_mapping.json",
+    "best_f1_macro": 87.0,
+    "best_accuracy": 99.9
+  },
+  "scaler": "scaler.pkl",
+  "feature_count": 66,
+  "dataset": "CICIDS2017"
+}

@@ -1,0 +1,63 @@
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+
+# ─── Jupyter ───
+.ipynb_checkpoints/
+*.ipynb_meta
+
+# ─── ML Artifacts (use Git LFS for large files) ───
+ml/data/raw/*.csv
+ml/data/raw/*.pcap
+ml/data/processed/*.parquet
+ml/data/processed/*.csv
+
+# ─── Environment ───
+.env
+.env.local
+.env.*.local
+
+# ─── Node / Frontend ───
+node_modules/
+frontend/dist/
+frontend/build/
+*.tsbuildinfo
+.vite/
+
+# ─── Docker ───
+docker-compose.override.yml
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── OS ───
+desktop.ini
+ehthumbs.db
+
+# ─── Testing / Coverage ───
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+
+# ─── Logs ───
+*.log
+logs/
