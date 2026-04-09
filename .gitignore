@@ -61,3 +61,6 @@ coverage.xml
 # ─── Logs ───
 *.log
 logs/
+
+.agent/
+.planning/
