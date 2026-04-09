@@ -19,7 +19,7 @@ router = APIRouter()
     description=(
         "Upload a CSV file of network flows. Returns binary classification "
         "(BENIGN/ATTACK) plus specific attack type for each detected attack "
-        "using a two-stage pipeline: binary ensemble → multi-class XGBoost."
+        "using a two-stage pipeline: Parallel OR Ensembler (Voting Ensemble + Isolation Forest) → multi-class XGBoost."
     )
 )
 async def predict(file: UploadFile = File(...)):

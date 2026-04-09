@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     RF_MODEL_PATH: str = "models/rf_model.pkl"
     XGB_MODEL_PATH: str = "models/xgb_model.pkl"
     MLP_MODEL_PATH: str = "models/mlp_model.keras"
+    ISO_MODEL_PATH: str = "models/iso_model.pkl"
 
     # Multi-class model path (Stage 2 — attack classification)
     MULTICLASS_MODEL_PATH: str = "models/multiclass_xgb.pkl"
