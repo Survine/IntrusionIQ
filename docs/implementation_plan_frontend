@@ -1,0 +1,63 @@
+# IntrusionIQ React Dashboard Implementation Plan
+
+Dashboard for IntrusionIQ. Single page. No login. Four zones.
+
+## Proposed Changes
+
+### Frontend Setup
+- Init Vite React app in `frontend/`.
+- Install Tailwind CSS v4 (`@tailwindcss/vite`, `tailwindcss`).
+- Install `recharts` for industry-grade charts.
+- Set Vite port to 3000 (match backend CORS).
+- Clear existing stubs.
+
+### Design System (`frontend/src/index.css` & Components)
+- Tailwind CSS v4.
+- Modular component-based styling (Tailwind utility classes + CSS Modules if needed).
+- Modern 2026 UI: glassmorphism, vibrant accents, smooth gradients, micro-animations. Industry-grade visuals.
+- Working Light and Dark theme toggle.
+
+### API Integration & Services (`frontend/src/services/api.js`)
+- Fully connect all React components to the FastAPI backend.
+- `api.getHealth()` -> `GET /api/v1/health`
+- `api.postPredict(file)` -> `POST /api/v1/predict`
+- `api.getMetrics()` -> `GET /api/v1/metrics`
+- Global error handling for network failures.
+
+### Components (`frontend/src/components/`)
+- `HealthStrip.jsx` (Zone 1)
+  - `GET /api/v1/health` on mount.
+  - Green if backend/model OK. Red if down. Warn user if down.
+  - Includes Light/Dark theme toggle button.
+- `FileUpload.jsx` (Zone 2)
+  - Drag-drop area.
+  - Client-side CSV check.
+  - `POST /api/v1/predict` on upload.
+  - Show spinner during wait. Error banner on fail.
+- `SummaryCards.jsx` (Zone 3)
+  - 4 cards: Total Flows, Attacks (Red), Benign (Green), Attack %.
+  - Unhide post-upload.
+- `ResultsPanel.jsx` (Zone 4)
+  - `AttackChart.jsx`: Horizontal bar chart using Recharts (`attack_type_counts`). "Needs Review" bar included. Industry-grade styling.
+  - `PredictionTable.jsx`: Scrollable table. Flow #, Prediction (color-coded), Confidence, Type. Sortable by confidence.
+  - `MetricsPanel.jsx`: `GET /api/v1/metrics`. Static load. F1, Accuracy, FPR, Precision, Recall.
+
+### App (`frontend/src/App.jsx`)
+- Orchestrate state: `uploadStatus`, `healthStatus`, `predictionData`, `metricsData`.
+- Assemble 4 zones.
+- Guarantee full end-to-end data flow from backend API to all UI components.
+
+## Verification Plan
+
+### Automated Tests
+- None required (Sem 6 scope).
+
+### Manual Verification
+1. Run backend (`uvicorn`).
+2. Run frontend (`npm run dev`).
+3. Load `http://localhost:3000`.
+4. Check health strip green.
+5. Upload `ml/demo_sample.csv`.
+6. Verify spinner shows, then summary cards and results appear.
+7. Verify metrics panel loads correct values.
+8. Verify UI aesthetic fits "2026 modern design".

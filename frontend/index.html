@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntrusionIQ | AI SOC Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body class="dark-theme">
+    <!-- Background Animated Shapes -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <div class="app-container">
+        <!-- Sidebar / Navbar -->
+        <nav class="glass-panel sidebar">
+            <div class="logo">
+                <ion-icon name="shield-checkmark"></ion-icon>
+                <h1>IntrusionIQ</h1>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><ion-icon name="grid"></ion-icon> Dashboard</a></li>
+                <li><a href="#"><ion-icon name="analytics"></ion-icon> Analysis</a></li>
+                <li><a href="#"><ion-icon name="settings"></ion-icon> Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header glass-panel">
+                <div class="header-titles">
+                    <h2>Overview</h2>
+                    <p>Real-time Network Threat Inference Engine</p>
+                </div>
+                <div class="header-actions">
+                    <span class="status-badge pulse"><ion-icon name="radio-button-on"></ion-icon> API Connected</span>
+                </div>
+            </header>
+
+            <!-- Metrics Overview -->
+            <section class="metrics-grid">
+                <div class="glass-panel metric-card">
+                    <div class="metric-icon accuracy"><ion-icon name="checkmark-done-circle"></ion-icon></div>
+                    <div class="metric-data">
+                        <h3>Model Accuracy</h3>
+                        <p id="val-accuracy">--%</p>
+                    </div>
+                </div>
+                <div class="glass-panel metric-card">
+                    <div class="metric-icon f1score"><ion-icon name="flame"></ion-icon></div>
+                    <div class="metric-data">
+                        <h3>F1 Score</h3>
+                        <p id="val-f1score">--%</p>
+                    </div>
+                </div>
+                <div class="glass-panel metric-card">
+                    <div class="metric-icon precision"><ion-icon name="locate"></ion-icon></div>
+                    <div class="metric-data">
+                        <h3>Recall</h3>
+                        <p id="val-recall">--%</p>
+                    </div>
+                </div>
+                <div class="glass-panel metric-card">
+                    <div class="metric-icon false-positive"><ion-icon name="warning"></ion-icon></div>
+                    <div class="metric-data">
+                        <h3>False Positive Rate</h3>
+                        <p id="val-fpr">--%</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="dashboard-body">
+                <!-- Upload Section -->
+                <section class="glass-panel section-upload">
+                    <h3>Analyze Network Flows</h3>
+                    <p>Upload a PCAP/CSV file containing extracted Zeek/CICIDS flows to run through the Two-Stage Ensemble Pipeline.</p>
+                    
+                    <div class="drop-zone" id="drop-zone">
+                        <ion-icon name="cloud-upload-outline"></ion-icon>
+                        <span class="drop-zone-prompt">Drag & Drop CSV Here or <span class="highlight">Browse</span></span>
+                        <input type="file" id="file-input" name="file" accept=".csv">
+                    </div>
+                    
+                    <div class="upload-status hidden" id="upload-status">
+                        <p id="status-text">Uploading...</p>
+                        <div class="progress-bar">
+                            <div class="progress" id="progress"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="results-container" class="results-container hidden">
+                    <!-- Threat Chart -->
+                    <section class="glass-panel section-chart">
+                        <h3>Threat Distribution</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="threatChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Threat Details -->
+                    <section class="glass-panel section-details">
+                        <h3>Detection Results</h3>
+                        <div class="stats-row">
+                            <div class="stat"><span class="label">Total Flows:</span> <span id="res-total" class="value">0</span></div>
+                            <div class="stat"><span class="label">Attacks Detected:</span> <span id="res-attacks" class="value text-danger">0</span></div>
+                            <div class="stat"><span class="label">Benign:</span> <span id="res-benign" class="value text-success">0</span></div>
+                        </div>
+                        
+                        <h4>Attack Breakdown</h4>
+                        <ul class="attack-list" id="attack-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </section>
+                </div>
+            </div>
+            
+            <footer class="footer">
+                <p>IntrusionIQ Pipeline &copy; 2026. Powered by Hybrid ML Arch.</p>
+            </footer>
+        </main>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
