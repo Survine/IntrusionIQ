@@ -1,6 +1,15 @@
 ﻿import { formatCount, formatPercent } from '../lib/format';
 import ThreatChart from './ThreatChart';
 
+const attackAccentClasses = [
+  'border-rose-400/20 bg-rose-400/8',
+  'border-orange-400/20 bg-orange-400/8',
+  'border-amber-400/20 bg-amber-400/8',
+  'border-sky-400/20 bg-sky-400/8',
+  'border-violet-400/20 bg-violet-400/8',
+  'border-fuchsia-400/20 bg-fuchsia-400/8',
+];
+
 export default function ResultsPanel({ results }) {
   const totalFlows = Number(results?.total_flows) || 0;
   const attackCount = Number(results?.attack_count) || 0;
@@ -29,9 +38,9 @@ export default function ResultsPanel({ results }) {
         <div className="grid gap-5">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryCard label="Total flows" value={formatCount(totalFlows)} />
-            <SummaryCard label="Attacks" value={formatCount(attackCount)} />
-            <SummaryCard label="Benign" value={formatCount(benignCount)} />
-            <SummaryCard label="Attack rate" value={formatPercent(attackRate)} accent />
+            <SummaryCard label="Attacks" value={formatCount(attackCount)} tone="rose" />
+            <SummaryCard label="Benign" value={formatCount(benignCount)} tone="emerald" />
+            <SummaryCard label="Attack rate" value={formatPercent(attackRate)} tone="rose" />
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
@@ -55,15 +64,19 @@ export default function ResultsPanel({ results }) {
                 </div>
               </div>
               <ul className="grid gap-2">
-                {attackEntries.length > 0 ? attackEntries.map(([attackType, count]) => (
-                  <li key={attackType} className="flex items-center justify-between gap-4 rounded-[16px] border border-white/10 bg-white/[0.025] px-4 py-3">
-                    <div className="flex min-w-0 items-center gap-3 font-medium text-zinc-100">
-                      <span className="h-2.5 w-2.5 rounded-full bg-lime-300/90 shadow-[0_0_0_6px_rgba(163,230,53,0.08)]" />
-                      <span className="truncate">{attackType}</span>
-                    </div>
-                    <div className="whitespace-nowrap font-mono text-zinc-500">{formatCount(count)} flows</div>
-                  </li>
-                )) : (
+                {attackEntries.length > 0 ? attackEntries.map(([attackType, count], index) => {
+                  const accentClass = attackAccentClasses[index % attackAccentClasses.length];
+
+                  return (
+                    <li key={attackType} className={`flex items-center justify-between gap-4 rounded-[16px] border px-4 py-3 ${accentClass}`}>
+                      <div className="flex min-w-0 items-center gap-3 font-medium text-zinc-100">
+                        <span className="h-2.5 w-2.5 rounded-full bg-current opacity-80" />
+                        <span className="truncate">{attackType}</span>
+                      </div>
+                      <div className="whitespace-nowrap font-mono text-zinc-400">{formatCount(count)} flows</div>
+                    </li>
+                  );
+                }) : (
                   <li className="rounded-[16px] border border-white/10 bg-white/[0.025] px-4 py-3 text-center text-sm text-zinc-500">
                     No specific mapped attacks returned for this upload.
                   </li>
@@ -88,9 +101,15 @@ export default function ResultsPanel({ results }) {
   );
 }
 
-function SummaryCard({ label, value, accent = false }) {
+function SummaryCard({ label, value, tone = 'default' }) {
+  const toneClasses = {
+    rose: 'border-rose-400/20 bg-rose-400/8',
+    emerald: 'border-emerald-400/20 bg-emerald-400/8',
+    default: 'border-white/10 bg-white/[0.025]',
+  };
+
   return (
-    <div className={`grid gap-1 rounded-[18px] border px-4 py-4 ${accent ? 'border-lime-400/20 bg-lime-400/8' : 'border-white/10 bg-white/[0.025]'}`}>
+    <div className={`grid gap-1 rounded-[18px] border px-4 py-4 ${toneClasses[tone]}`}>
       <span className="text-[0.68rem] uppercase tracking-[0.16em] text-zinc-500">{label}</span>
       <strong className="font-mono text-[1.05rem] text-zinc-50">{value}</strong>
     </div>

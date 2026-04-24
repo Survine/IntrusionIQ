@@ -1,126 +1,15 @@
-﻿import { useEffect, useRef, useState } from 'react';
-import Header from './components/Header';
+﻿import Header from './components/Header';
 import SignalRail from './components/SignalRail';
-import MetricStrip from './components/MetricStrip';
 import WorkflowSteps from './components/WorkflowSteps';
 import UploadPanel from './components/UploadPanel';
 import ResultsPanel from './components/ResultsPanel';
-
-const API_BASE_URL = 'http://localhost:8000/api/v1';
-
-const navItems = [
-  ['How it works', '#workflow'],
-  ['Analyze', '#analysis'],
-  ['Results', '#results'],
-  ['Health', '#health'],
-];
+import { useMetrics } from './hooks/useMetrics';
+import { useUpload } from './hooks/useUpload';
+import { NAV_ITEMS } from './constants';
 
 export default function App() {
-  const fileInputRef = useRef(null);
-
-  const [metrics, setMetrics] = useState({});
-  const [apiStatus, setApiStatus] = useState('API polling');
-  const [isDragging, setIsDragging] = useState(false);
-  const [uploadState, setUploadState] = useState({ visible: false, text: 'Preparing upload...', progress: 0 });
-  const [error, setError] = useState('');
-  const [results, setResults] = useState(null);
-
-  useEffect(() => {
-    void fetchMetrics();
-  }, []);
-
-  async function fetchMetrics() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/metrics`);
-      if (!response.ok) {
-        throw new Error('Metrics request failed.');
-      }
-
-      const data = await response.json();
-      setMetrics(data);
-      setApiStatus('API healthy');
-    } catch (fetchError) {
-      console.error('Failed to fetch metrics:', fetchError);
-      setApiStatus('API offline');
-    }
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-    setIsDragging(true);
-  }
-
-  function handleDragLeave(event) {
-    event.preventDefault();
-    setIsDragging(false);
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    setIsDragging(false);
-
-    const file = event.dataTransfer.files?.[0];
-    if (file) {
-      void handleFile(file);
-    }
-  }
-
-  function handleBrowseClick() {
-    fileInputRef.current?.click();
-  }
-
-  function handleFileInput(event) {
-    const file = event.target.files?.[0];
-    if (file) {
-      void handleFile(file);
-    }
-  }
-
-  async function handleFile(file) {
-    setError('');
-
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      setError('Please upload a valid CSV file.');
-      return;
-    }
-
-    setResults(null);
-    setUploadState({ visible: true, text: `Uploading ${file.name}...`, progress: 24 });
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    window.setTimeout(() => {
-      setUploadState({ visible: true, text: 'Analyzing flows via two-stage ensemble...', progress: 62 });
-    }, 220);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/predict`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Prediction request failed.');
-      }
-
-      const data = await response.json();
-      setUploadState({ visible: true, text: 'Analysis complete.', progress: 100 });
-      setResults(data);
-
-      window.setTimeout(() => {
-        setUploadState({ visible: false, text: 'Preparing upload...', progress: 0 });
-      }, 550);
-    } catch (uploadError) {
-      console.error('Error:', uploadError);
-      setError(`Upload failed. ${uploadError.message}`);
-      setUploadState({ visible: true, text: 'Upload failed.', progress: 100 });
-
-      window.setTimeout(() => {
-        setUploadState({ visible: false, text: 'Preparing upload...', progress: 0 });
-      }, 2500);
-    }
-  }
+  const { metrics, apiStatus } = useMetrics();
+  const { fileInputRef, isDragging, uploadState, error, results, handlers } = useUpload();
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#05090d] text-zinc-100">
@@ -142,7 +31,7 @@ export default function App() {
             </div>
 
             <nav className="flex flex-wrap gap-2" aria-label="Primary">
-              {navItems.map(([label, href], index) => (
+              {NAV_ITEMS.map(([label, href], index) => (
                 <a
                   key={label}
                   href={href}
@@ -166,18 +55,13 @@ export default function App() {
                 isDragging={isDragging}
                 uploadState={uploadState}
                 error={error}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onBrowseClick={handleBrowseClick}
-                onFileInput={handleFileInput}
+                {...handlers}
               />
             </div>
 
             <SignalRail metrics={metrics} apiStatus={apiStatus} />
           </section>
 
-          <MetricStrip metrics={metrics} />
           <ResultsPanel results={results} />
 
           <footer className="px-1 pb-3 text-sm text-zinc-500">

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
 export default function ThreatChart({ benignCount, attackCount, totalFlows }) {
@@ -16,8 +16,8 @@ export default function ThreatChart({ benignCount, attackCount, totalFlows }) {
         labels: ['Benign', 'Attacks'],
         datasets: [{
           data: [1, 0],
-          backgroundColor: ['#4ade80', '#a3e635'],
-          borderColor: ['rgba(74, 222, 128, 0.16)', 'rgba(163, 230, 53, 0.16)'],
+          backgroundColor: ['#22c55e', '#ef4444'],
+          borderColor: ['rgba(34, 197, 94, 0.18)', 'rgba(239, 68, 68, 0.18)'],
           borderWidth: 1,
           hoverOffset: 4,
         }],
