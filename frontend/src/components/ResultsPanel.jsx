@@ -1,14 +1,6 @@
-﻿import { formatCount, formatPercent } from '../lib/format';
+import { formatCount, formatPercent } from '../lib/format';
 import ThreatChart from './ThreatChart';
-
-const attackAccentClasses = [
-  'border-rose-400/20 bg-rose-400/8',
-  'border-orange-400/20 bg-orange-400/8',
-  'border-amber-400/20 bg-amber-400/8',
-  'border-sky-400/20 bg-sky-400/8',
-  'border-violet-400/20 bg-violet-400/8',
-  'border-fuchsia-400/20 bg-fuchsia-400/8',
-];
+import AttackTypeChart from './AttackTypeChart';
 
 export default function ResultsPanel({ results }) {
   const totalFlows = Number(results?.total_flows) || 0;
@@ -36,14 +28,7 @@ export default function ResultsPanel({ results }) {
 
       {results ? (
         <div className="grid gap-5">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <SummaryCard label="Total flows" value={formatCount(totalFlows)} />
-            <SummaryCard label="Attacks" value={formatCount(attackCount)} tone="rose" />
-            <SummaryCard label="Benign" value={formatCount(benignCount)} tone="emerald" />
-            <SummaryCard label="Attack rate" value={formatPercent(attackRate)} tone="rose" />
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div className="grid gap-5 lg:grid-cols-2">
             <section className="rounded-[22px] border border-white/10 bg-white/[0.02] p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
@@ -51,38 +36,33 @@ export default function ResultsPanel({ results }) {
                   <p className="m-0 mt-1 text-sm text-zinc-500">Updated after each upload</p>
                 </div>
               </div>
-              <div className="relative min-h-[280px]">
+
+              <div className="mx-auto w-full max-w-[780px]">
                 <ThreatChart benignCount={benignCount} attackCount={attackCount} totalFlows={totalFlows} />
               </div>
+              <p className="mt-3 text-center text-xs uppercase tracking-[0.14em] text-zinc-500">Benign and attack ring comparison</p>
             </section>
 
             <section className="rounded-[22px] border border-white/10 bg-white/[0.02] p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <h4 className="m-0 text-base font-semibold tracking-[-0.03em] text-zinc-50">Attack breakdown</h4>
-                  <p className="m-0 mt-1 text-sm text-zinc-500">Most frequent families first</p>
+                  <h4 className="m-0 text-base font-semibold tracking-[-0.03em] text-zinc-50">Attack type share</h4>
+                  <p className="m-0 mt-1 text-sm text-zinc-500">Distribution across detected attack families</p>
                 </div>
               </div>
-              <ul className="grid gap-2">
-                {attackEntries.length > 0 ? attackEntries.map(([attackType, count], index) => {
-                  const accentClass = attackAccentClasses[index % attackAccentClasses.length];
 
-                  return (
-                    <li key={attackType} className={`flex items-center justify-between gap-4 rounded-[16px] border px-4 py-3 ${accentClass}`}>
-                      <div className="flex min-w-0 items-center gap-3 font-medium text-zinc-100">
-                        <span className="h-2.5 w-2.5 rounded-full bg-current opacity-80" />
-                        <span className="truncate">{attackType}</span>
-                      </div>
-                      <div className="whitespace-nowrap font-mono text-zinc-400">{formatCount(count)} flows</div>
-                    </li>
-                  );
-                }) : (
-                  <li className="rounded-[16px] border border-white/10 bg-white/[0.025] px-4 py-3 text-center text-sm text-zinc-500">
-                    No specific mapped attacks returned for this upload.
-                  </li>
-                )}
-              </ul>
+              <div className="mx-auto w-full max-w-[780px]">
+                <AttackTypeChart attackEntries={attackEntries} />
+              </div>
+              <p className="mt-3 text-center text-xs uppercase tracking-[0.14em] text-zinc-500">Attack share by family (percentage)</p>
             </section>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <SummaryCard label="Total flows" value={formatCount(totalFlows)} />
+            <SummaryCard label="Attacks" value={formatCount(attackCount)} tone="rose" />
+            <SummaryCard label="Benign" value={formatCount(benignCount)} tone="emerald" />
+            <SummaryCard label="Attack rate" value={formatPercent(attackRate)} tone="rose" />
           </div>
         </div>
       ) : (
@@ -115,3 +95,7 @@ function SummaryCard({ label, value, tone = 'default' }) {
     </div>
   );
 }
+
+
+
+
