@@ -1,0 +1,119 @@
+IntrusionIQ Frontend Work Summary
+Date: 25 April 2026
+
+Overview
+
+We built the IntrusionIQ frontend as a React-based Security Operations Center dashboard for uploading network-flow CSV files, sending them to the FastAPI backend, and presenting the model output in a clear analyst-friendly interface. The frontend turns the ML pipeline results into an interactive dashboard with upload validation, live API health, model metrics, charts, summary cards, and a detailed per-flow results table.
+
+Technology Used
+
+- React 18 for the component-based user interface.
+- Vite for fast local development and frontend builds.
+- Tailwind CSS v4 for responsive styling and dashboard layout.
+- ECharts with echarts-for-react for threat and confidence visualizations.
+- Ionicons for dashboard and workflow icons.
+- Browser fetch API for communication with the backend endpoints.
+
+Main Frontend Work Completed
+
+1. React Dashboard Setup
+
+We converted the frontend into a modern React/Vite application. The application entry point renders the main App component, imports the global Tailwind stylesheet, and serves the dashboard through Vite. The frontend structure was organized into reusable components, hooks, services, constants, and formatting utilities.
+
+2. SOC Dashboard Layout
+
+We designed a dark SOC-style dashboard for IntrusionIQ. The layout includes a top navigation bar, product identity, guided workflow, CSV upload section, live signal panel, results section, charts, and footer. The interface uses a cybersecurity-focused visual style with dark surfaces, lime/cyan accents, compact cards, readable typography, and responsive spacing for desktop and smaller screens.
+
+3. Guided Workflow Section
+
+We added a three-step workflow that explains the user path:
+
+- Upload CSV.
+- Run detection through the two-stage ML pipeline.
+- Review threats through charts, summary cards, and table output.
+
+This helps users understand the process without needing separate instructions.
+
+4. CSV Upload Experience
+
+We implemented a drag-and-drop and browse-based CSV upload panel. The upload flow checks that the file is a CSV, rejects empty files, estimates the row count, warns users for large uploads, and shows validation notes before sending data to the backend. The upload state includes progress messages such as uploading, analyzing, complete, and failed.
+
+5. Backend API Integration
+
+We connected the frontend to the FastAPI backend through a dedicated API service file. The frontend calls:
+
+- GET /api/v1/metrics for model performance metrics.
+- GET /api/v1/health for API and model readiness.
+- POST /api/v1/predict for CSV prediction.
+
+The API layer also parses backend error responses and returns meaningful messages to the UI.
+
+6. Health and Metrics Panel
+
+We added a live signal rail showing model performance and readiness. It displays precision, recall, F1 score, false positive rate, API status, and model load status for the Random Forest, XGBoost, MLP, Isolation Forest, and multi-class model. The health check refreshes when the app loads and when the Health section is opened through navigation.
+
+7. Prediction Results Dashboard
+
+We built a results panel that appears after prediction output is returned. It summarizes:
+
+- Total network flows.
+- Attack count.
+- Benign count.
+- Attack percentage.
+- Flows needing review.
+- Top suspicious flows ranked by confidence.
+
+The panel also includes an empty state before upload and a loading skeleton while analysis is running.
+
+8. Data Visualizations
+
+We added ECharts visualizations to make the prediction results easier to interpret:
+
+- Benign vs attack donut chart.
+- Attack type distribution donut chart.
+- Confidence score histogram.
+
+These charts update based on the uploaded file's prediction response and include fallback states when no data is available.
+
+9. Per-Flow Results Table
+
+We implemented a detailed table for individual flow predictions. The table supports sorting, searching, stage filtering, severity labels, and performance-safe rendering for large result sets. It shows flow number, prediction label, attack type, confidence, detection stage, and severity.
+
+10. CSV Export
+
+We added an export option so users can download the currently sorted and filtered prediction table as a CSV file. This supports reporting and offline review after analysis.
+
+11. Error Handling and User Feedback
+
+We improved user feedback across the frontend. The interface now shows clear messages for offline backend state, missing models, invalid CSV files, schema mismatches, empty files, failed uploads, and large datasets. This makes the dashboard easier to use during testing and demonstrations.
+
+12. Code Organization
+
+We separated logic into focused modules:
+
+- components for visible UI sections.
+- hooks for upload, metrics, and health state.
+- services for backend API calls.
+- constants for navigation, upload timing, validation, and thresholds.
+- format utilities for numbers and percentages.
+
+This made the frontend easier to maintain and extend.
+
+Important Frontend Files
+
+- frontend/src/App.jsx: Main dashboard composition and page structure.
+- frontend/src/components/UploadPanel.jsx: CSV upload interface.
+- frontend/src/components/ResultsPanel.jsx: Prediction summaries, charts, table, filters, and export.
+- frontend/src/components/SignalRail.jsx: API health and model status panel.
+- frontend/src/components/ThreatChart.jsx: Benign vs attack visualization.
+- frontend/src/components/AttackTypeChart.jsx: Attack type distribution visualization.
+- frontend/src/components/ConfidenceHistogram.jsx: Confidence score chart.
+- frontend/src/hooks/useUpload.js: Upload validation, progress, API call, and result state.
+- frontend/src/hooks/useMetrics.js: Model metrics loading.
+- frontend/src/hooks/useHealth.js: Backend health checking.
+- frontend/src/services/api.js: Backend API communication.
+- frontend/src/index.css: Global Tailwind styling and typography.
+
+Final Outcome
+
+The frontend is now a functional SOC dashboard for IntrusionIQ. It allows a user to upload a CICIDS2017-style CSV file, validates the file, sends it to the backend ML pipeline, displays live backend and model health, visualizes prediction results, highlights suspicious flows, supports filtering and sorting, and allows exporting results for reporting. This completes the user-facing layer needed to demonstrate the full intrusion detection workflow from CSV upload to threat analysis.

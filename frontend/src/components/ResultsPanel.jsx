@@ -9,7 +9,6 @@ const MAX_ROWS_RENDERED = 1500;
 const STAGE_OPTIONS = [
   { value: 'all', label: 'All stages' },
   { value: 'Stage 1 Benign', label: 'Stage 1 Benign' },
-  { value: 'Stage 1 Attack', label: 'Stage 1 Attack' },
   { value: 'Stage 2 Classified', label: 'Stage 2 Classified' },
   { value: 'Stage 2 Review', label: 'Stage 2 Review' },
 ];
@@ -41,8 +40,6 @@ function getStage(entry) {
   if (entry?.attack_type) {
     return 'Stage 2 Classified';
   }
-
-  return 'Stage 1 Attack';
 }
 
 function getSeverity(entry) {
