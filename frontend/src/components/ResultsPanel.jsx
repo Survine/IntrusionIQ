@@ -146,19 +146,6 @@ export default function ResultsPanel({ results, isProcessing, lastAnalyzedAt }) 
     [rows],
   );
 
-  const topAttackInsight = useMemo(() => {
-    if (!attackCount || attackEntries.length === 0) {
-      return null;
-    }
-
-    const [family, familyCount] = attackEntries[0];
-    return {
-      family,
-      count: familyCount,
-      share: attackCount > 0 ? (familyCount / attackCount) * 100 : 0,
-    };
-  }, [attackCount, attackEntries]);
-
   const filteredRows = useMemo(() => {
     const query = searchText.trim().toLowerCase();
 
@@ -234,31 +221,8 @@ export default function ResultsPanel({ results, isProcessing, lastAnalyzedAt }) 
         <div className="max-w-3xl">
           <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-lime-300">Prediction output</p>
           <h3 className="text-[clamp(1.25rem,1.5vw,1.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-zinc-50">
-            Threat summary and per-flow analysis
+            Threat summary
           </h3>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-            A denser readout for the latest capture: concentration, review load, and ranked flows without the old one-line family recap.
-          </p>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-3 lg:min-w-130">
-          <InsightTile label="Top family" value={topAttackInsight ? topAttackInsight.family : '--'} note={topAttackInsight ? `${formatCount(topAttackInsight.count)} flows` : 'No attacks'} tone="cyan" />
-          <InsightTile label="Attack share" value={formatPercent(attackRate)} note={`${formatCount(attackCount)} attack flows`} tone="rose" />
-          <InsightTile label="Needs review" value={formatCount(needsReviewCount)} note={formatCount(totalFlows)} tone="amber" />
-        </div>
-      </div>
-
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[18px] border border-white/10 bg-white/2.5 px-4 py-3">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-400">
-          <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1 text-zinc-200">
-            {attackCount > 0 ? `${formatCount(attackCount)} attacks` : 'No attacks detected'}
-          </span>
-          <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1 text-zinc-200">
-            {benignCount > 0 ? `${formatCount(benignCount)} benign` : 'No benign flows'}
-          </span>
-          <span className="text-zinc-500">
-            Last run: {lastAnalyzedAt ? new Date(lastAnalyzedAt).toLocaleString() : '--'}
-          </span>
         </div>
 
         <button
@@ -471,22 +435,6 @@ function SummaryCard({ label, value, tone = 'default' }) {
     <div className={`grid gap-1 rounded-[18px] border px-4 py-4 ${toneClasses[tone]}`}>
       <span className="text-[0.68rem] uppercase tracking-[0.16em] text-zinc-500">{label}</span>
       <strong className="font-mono text-[1.05rem] text-zinc-50">{value}</strong>
-    </div>
-  );
-}
-
-function InsightTile({ label, value, note, tone = 'cyan' }) {
-  const toneClasses = {
-    cyan: 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100',
-    rose: 'border-rose-300/20 bg-rose-300/10 text-rose-100',
-    amber: 'border-amber-300/20 bg-amber-300/10 text-amber-100',
-  };
-
-  return (
-    <div className={`rounded-[18px] border px-4 py-3 ${toneClasses[tone]}`}>
-      <span className="block text-[0.68rem] uppercase tracking-[0.18em] text-zinc-400">{label}</span>
-      <strong className="mt-1 block truncate text-[1rem] font-semibold tracking-[-0.03em] text-zinc-50">{value}</strong>
-      <span className="mt-1 block text-xs text-zinc-400">{note}</span>
     </div>
   );
 }
