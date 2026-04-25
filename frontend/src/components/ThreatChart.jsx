@@ -71,20 +71,24 @@ export default function ThreatChart({ benignCount, attackCount, totalFlows }) {
   }), [chartData, hasData]);
 
   return (
-    <div className="grid h-full w-full gap-4 md:grid-cols-[minmax(0,0.5fr)_minmax(240px,0.5fr)] md:items-center">
-      <div className="h-[300px] w-full sm:h-[330px]">
-        <ReactECharts option={option} className="h-full w-full" notMerge lazyUpdate />
+    <div className="grid h-full w-full gap-3 md:grid-cols-[minmax(0,0.5fr)_minmax(240px,0.5fr)] md:items-stretch">
+      <div className="flex h-full min-h-[300px] w-full items-center justify-end pr-1 sm:min-h-[330px]">
+        <ReactECharts option={option} className="h-[300px] w-full sm:h-[330px]" notMerge lazyUpdate />
       </div>
 
-      <div className="space-y-3 pr-1">
+      <div className="flex h-full items-center pr-1">
         {hasData ? (
-          labelRows.map((row) => (
-            <div key={row.name} className="flex items-center gap-3 text-base text-zinc-100">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: row.color }} />
-              <span className="font-semibold">{row.name}</span>
-              <span className="text-zinc-300">{row.percent.toFixed(2)}%</span>
-            </div>
-          ))
+          <div className="space-y-2">
+            {labelRows.map((row) => (
+              <div key={row.name} className="flex items-start gap-2.5 text-base leading-6 text-zinc-200">
+                <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: row.color }} />
+                <span className="min-w-0">
+                  <span className="break-words font-semibold text-zinc-100">{row.name}</span>
+                  <span className="ml-1 text-zinc-300">{row.percent.toFixed(2)}%</span>
+                </span>
+              </div>
+            ))}
+          </div>
         ) : (
           <p className="text-sm text-zinc-500">No traffic loaded.</p>
         )}
@@ -92,3 +96,4 @@ export default function ThreatChart({ benignCount, attackCount, totalFlows }) {
     </div>
   );
 }
+

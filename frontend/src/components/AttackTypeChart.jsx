@@ -86,9 +86,9 @@ export default function AttackTypeChart({ attackEntries }) {
   }), [chartData, hasData]);
 
   return (
-    <div className="grid h-full w-full gap-4 md:grid-cols-[minmax(0,0.5fr)_minmax(240px,0.5fr)] md:items-center">
-      <div className="h-[300px] w-full sm:h-[330px]">
-        <ReactECharts option={option} className="h-full w-full" notMerge lazyUpdate />
+    <div className="grid h-full w-full gap-4 md:grid-cols-[minmax(0,0.5fr)_minmax(240px,0.5fr)] md:items-stretch">
+      <div className="flex h-full min-h-[300px] w-full items-center sm:min-h-[330px]">
+        <ReactECharts option={option} className="h-[300px] w-full sm:h-[330px]" notMerge lazyUpdate />
       </div>
 
       <div className="space-y-2 pr-1">
@@ -109,3 +109,5 @@ export default function AttackTypeChart({ attackEntries }) {
     </div>
   );
 }
+
+

@@ -1,15 +1,54 @@
-﻿import Header from './components/Header';
+import { useEffect } from 'react';
+import Header from './components/Header';
 import SignalRail from './components/SignalRail';
 import WorkflowSteps from './components/WorkflowSteps';
 import UploadPanel from './components/UploadPanel';
 import ResultsPanel from './components/ResultsPanel';
 import { useMetrics } from './hooks/useMetrics';
 import { useUpload } from './hooks/useUpload';
+import { useHealth } from './hooks/useHealth';
 import { NAV_ITEMS } from './constants';
+
+function isHealthHash(hash) {
+  return hash === '#health';
+}
 
 export default function App() {
   const { metrics, apiStatus } = useMetrics();
-  const { fileInputRef, isDragging, uploadState, error, results, handlers } = useUpload();
+  const {
+    fileInputRef,
+    isDragging,
+    uploadState,
+    error,
+    results,
+    isProcessing,
+    rowWarning,
+    validationNote,
+    lastAnalyzedAt,
+    handlers,
+  } = useUpload();
+
+  const {
+    health,
+    healthStatus,
+    isLoading: isHealthLoading,
+    refreshHealth,
+  } = useHealth();
+
+  useEffect(() => {
+    function onHashChange() {
+      if (isHealthHash(window.location.hash)) {
+        void refreshHealth();
+      }
+    }
+
+    void refreshHealth();
+    window.addEventListener('hashchange', onHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', onHashChange);
+    };
+  }, [refreshHealth]);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#05090d] text-zinc-100">
@@ -55,14 +94,22 @@ export default function App() {
                 isDragging={isDragging}
                 uploadState={uploadState}
                 error={error}
+                rowWarning={rowWarning}
+                validationNote={validationNote}
                 {...handlers}
               />
             </div>
 
-            <SignalRail metrics={metrics} apiStatus={apiStatus} />
+            <SignalRail
+              metrics={metrics}
+              apiStatus={apiStatus}
+              health={health}
+              healthStatus={healthStatus}
+              isHealthLoading={isHealthLoading}
+            />
           </section>
 
-          <ResultsPanel results={results} />
+          <ResultsPanel results={results} isProcessing={isProcessing} lastAnalyzedAt={lastAnalyzedAt} />
 
           <footer className="px-1 pb-3 text-sm text-zinc-500">
             IntrusionIQ | local SOC dashboard for CSV-based network intrusion analysis.

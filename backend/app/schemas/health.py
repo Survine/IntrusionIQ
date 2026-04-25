@@ -8,3 +8,4 @@ class HealthResponse(BaseModel):
     app_name: str
     version: str
     model_loaded: bool
+    model_status: dict[str, bool]

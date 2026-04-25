@@ -1,4 +1,4 @@
-﻿export const API_BASE_URL = 'http://localhost:8000/api/v1';
+export const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 export const VALID_CSV_EXTENSIONS = ['.csv'];
 
@@ -20,6 +20,8 @@ export const UPLOAD_PROGRESS = {
   ANALYZING: 62,
   COMPLETE: 100,
 };
+
+export const SAFE_ROW_THRESHOLD = 50000;
 
 export function isValidCSV(fileName) {
   return VALID_CSV_EXTENSIONS.some(ext => fileName.toLowerCase().endsWith(ext));

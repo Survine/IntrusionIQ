@@ -1,8 +1,10 @@
-﻿export default function UploadPanel({
+export default function UploadPanel({
   fileInputRef,
   isDragging,
   uploadState,
   error,
+  rowWarning,
+  validationNote,
   onDragOver,
   onDragLeave,
   onDrop,
@@ -16,7 +18,7 @@
           <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-lime-300">Analysis input</p>
           <h3 className="text-[clamp(1.25rem,1.5vw,1.7rem)] font-semibold leading-[1.12] tracking-[-0.03em] text-zinc-50">Drop a CSV or browse for a network flow export</h3>
         </div>
-        <p className="max-w-lg text-sm leading-6 text-zinc-400">The file is checked for the required network-flow features before prediction begins.</p>
+        <p className="max-w-lg text-sm leading-6 text-zinc-400">The file is checked for required features and row volume before prediction begins.</p>
       </div>
 
       <div
@@ -53,6 +55,18 @@
           <div className="h-2 overflow-hidden rounded-full bg-white/10">
             <div className="h-full rounded-full bg-gradient-to-r from-lime-400 to-cyan-400 transition-[width] duration-200" style={{ width: `${uploadState.progress}%` }} />
           </div>
+        </div>
+      ) : null}
+
+      {validationNote ? (
+        <div className="mt-4 rounded-[18px] border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm text-cyan-100">
+          {validationNote}
+        </div>
+      ) : null}
+
+      {rowWarning ? (
+        <div className="mt-4 rounded-[18px] border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
+          {rowWarning}
         </div>
       ) : null}
 

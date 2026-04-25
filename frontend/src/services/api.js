@@ -1,16 +1,38 @@
-﻿const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+async function parseError(response, fallbackMessage) {
+  let detail = fallbackMessage;
+
+  try {
+    const payload = await response.json();
+    if (typeof payload?.detail === 'string' && payload.detail.trim()) {
+      detail = payload.detail;
+    }
+  } catch {
+    // Ignore JSON parse failures and keep fallback message.
+  }
+
+  const error = new Error(detail);
+  error.status = response.status;
+  return error;
+}
 
 export async function fetchMetrics() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/metrics`);
-    if (!response.ok) {
-      throw new Error('Metrics request failed.');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch metrics:', error);
-    throw error;
+  const response = await fetch(`${API_BASE_URL}/metrics`);
+  if (!response.ok) {
+    throw await parseError(response, 'Metrics request failed.');
   }
+
+  return await response.json();
+}
+
+export async function fetchHealth() {
+  const response = await fetch(`${API_BASE_URL}/health`);
+  if (!response.ok) {
+    throw await parseError(response, 'Health request failed.');
+  }
+
+  return await response.json();
 }
 
 export async function predictFile(file) {
@@ -23,7 +45,7 @@ export async function predictFile(file) {
   });
 
   if (!response.ok) {
-    throw new Error('Prediction request failed.');
+    throw await parseError(response, 'Prediction request failed.');
   }
 
   return await response.json();

@@ -17,19 +17,21 @@ router = APIRouter()
 )
 async def health_check():
     models = get_models()
-    binary_loaded = models.rf_model is not None
-    multiclass_loaded = models.multiclass_model is not None
-    all_loaded = binary_loaded and multiclass_loaded
+    model_status = {
+        "rf": models.rf_model is not None,
+        "xgb": models.xgb_model is not None,
+        "mlp": models.mlp_model is not None,
+        "iso": models.iso_model is not None,
+        "multiclass": models.multiclass_model is not None,
+    }
+    all_loaded = all(model_status.values())
 
-    logger.info(
-        "Health check requested",
-        binary_loaded=binary_loaded,
-        multiclass_loaded=multiclass_loaded
-    )
+    logger.info("Health check requested", model_status=model_status)
 
     return HealthResponse(
         status="healthy" if all_loaded else "unhealthy",
         app_name=settings.APP_NAME,
         version=settings.APP_VERSION,
-        model_loaded=all_loaded
+        model_loaded=all_loaded,
+        model_status=model_status,
     )
