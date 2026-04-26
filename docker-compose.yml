@@ -1,0 +1,60 @@
+# docker-compose.yml (project root)
+
+services:
+
+  # ── Backend ──────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    
+    # Map host port 8000 → container port 8000
+    # Format: "host:container"
+    ports:
+      - "8000:8000"
+    
+    # Volume mounts — inject model files at runtime
+    # host path : container path
+    # This is why we didn't COPY models/ in the Dockerfile
+    volumes:
+      - ./backend/models:/app/models
+      - ./backend/artifacts:/app/artifacts
+    
+    # Load environment variables from .env file
+    env_file:
+      - ./backend/.env
+    
+    # Container restarts if it crashes
+    # unless-stopped = restart always except manual docker stop
+    restart: unless-stopped
+    
+    # Connect to shared network
+    networks:
+      - soc-network
+
+  # ── Frontend ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    
+    # Map host port 3000 → container port 80 (Nginx default)
+    ports:
+      - "3000:80"
+    
+    # Frontend should start after backend is up
+    depends_on:
+      - backend
+    
+    restart: unless-stopped
+    
+    networks:
+      - soc-network
+
+# ── Network ────────────────────────────────────────────────────
+networks:
+  soc-network:
+    driver: bridge
+    # bridge = containers on this network can reach each other
+    # by service name (http://backend:8000)
+    # isolated from other Docker networks on your machine

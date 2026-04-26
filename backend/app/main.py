@@ -34,7 +34,7 @@ app = FastAPI(
     description="AI-Powered SOC Platform — Network Intrusion Detection API",
     docs_url="/docs",
     redoc_url="/redoc",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 
@@ -43,26 +43,14 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 
 # ── Routes ─────────────────────────────────────────────────────
-app.include_router(
-    health.router,
-    prefix=settings.API_V1_PREFIX,
-    tags=["Health"]
-)
+app.include_router(health.router, prefix=settings.API_V1_PREFIX, tags=["Health"])
 
-app.include_router(
-    metrics.router,
-    prefix=settings.API_V1_PREFIX,
-    tags=["Metrics"]
-)
+app.include_router(metrics.router, prefix=settings.API_V1_PREFIX, tags=["Metrics"])
 
-app.include_router(
-    predict.router,
-    prefix=settings.API_V1_PREFIX,
-    tags=["Predictions"]
-)
+app.include_router(predict.router, prefix=settings.API_V1_PREFIX, tags=["Predictions"])

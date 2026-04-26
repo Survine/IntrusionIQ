@@ -37,6 +37,7 @@ frontend/build/
 .vite/
 
 # ─── Docker ───
+.dockerignore
 docker-compose.override.yml
 
 # ─── IDE ───

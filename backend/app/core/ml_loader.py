@@ -1,7 +1,11 @@
+import os
 import json
 import joblib
 import structlog
 import numpy as np
+
+os.environ["KERAS_BACKEND"] = "tensorflow"  # must be set before keras imports
+
 import keras
 
 from app.core.config import settings
