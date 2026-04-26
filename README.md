@@ -69,57 +69,7 @@ IntrusionIQ delivers a **modern, open-source, explainable, and cloud-native alte
 ## 3. Architecture
 
 ### Sem 6 — Current Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Browser (Analyst)                       │
-│                React Dashboard  :3000                       │
-└────────────────────────┬────────────────────────────────────┘
-                         │ HTTP (CSV Upload / Metrics / Health)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│              FastAPI Backend  :8000                         │
-│                                                             │
-│  POST /api/v1/predict                                       │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │             STAGE 1 — Parallel OR Ensemble           │   │
-│  │                                                      │   │
-│  │   ┌──────────────────────┐  ┌──────────────────┐     │   │
-│  │   │  Voting Ensemble     │  │ Isolation Forest │     │   │
-│  │   │  RF + XGB + MLP      │  │ (Zero-day gate)  │     │   │
-│  │   │  Threshold = 0.50    │  │ Anomaly = -1     │     │   │
-│  │   └──────────┬───────────┘  └────────┬─────────┘     │   │
-│  │              │  OR Logic              │              │   │
-│  │              └───────────┬────────────┘              │   │
-│  │                          ▼                           │   │
-│  │              ATTACK?  Yes → Stage 2                  │   │
-│  │              BENIGN?  Both agreed → Done             │   │
-│  └──────────────────────────┬───────────────────────────┘   │
-│                             │                               │
-│  ┌──────────────────────────▼───────────────────────────┐   │
-│  │       STAGE 2 — Multiclass XGBoost (15 classes)      │   │
-│  │                                                      │   │
-│  │  Confidence >= 0.90 + BENIGN → Override to BENIGN    │   │
-│  │  Confidence <  0.90 + BENIGN → "Needs Review"        │   │
-│  │  Any attack class            → Label (e.g. DDoS)     │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                                                             │
-│  GET  /api/v1/metrics        GET  /api/v1/health            │
-└─────────────────────────────────────────────────────────────┘
-         │
-         │  Volume Mount (local) / COPY (Docker prod)
-         ▼
-┌─────────────────────────┐
-│       ML Models         │
-│  rf_model.pkl           │
-│  xgb_model.pkl          │
-│  mlp_model.keras        │
-│  multiclass_xgb.pkl     │
-│  iso_model.pkl          │
-│  scaler.pkl             │
-│  feature_names.json     │
-└─────────────────────────┘
-```
+![image](System%20Architecture.png "System Architecture")
 
 ### Data Flow
 
@@ -156,14 +106,14 @@ CSV Upload → Column Validation → Whitespace Strip → Feature Selection (66 
 | LightGBM | 99.66% | 99.94% | 0.13% | Fastest training |
 | MLP Neural Net | 98.26% | 99.80% | 0.68% | Deep learning baseline |
 | Isolation Forest | 49.65% | 41.12% | 4.98% | Unsupervised; zero-day value |
-| **Voting Ensemble** ⭐ | **99.72%** | **99.93%** | **0.10%** | **Production model** |
+| **Voting Ensemble** | **99.72%** | **99.93%** | **0.10%** | **Production model** |
 | Sequential Pipeline | 58.27% | 41.12% | 0.00% | Architecture comparison |
 
 **Multiclass Classification (15 classes)**
 
 | Model | Accuracy | F1 Macro | F1 Weighted |
 |-------|----------|----------|-------------|
-| XGBoost ⭐ | 99.87% | 87.00% | 99.87% |
+| XGBoost | 99.87% | 87.00% | 99.87% |
 | Random Forest | 99.41% | 83.44% | 99.57% |
 | MLP Neural Net | 99.38% | 77.62% | 99.53% |
 
@@ -313,25 +263,27 @@ Notable per-class F1 scores (XGBoost):
 | Heartbleed | 1.00 |
 | Bot | 0.79 |
 | Web Brute Force | 0.72 |
-| Web SQL Injection | 0.44 ⚠️ |
-| Web XSS | 0.46 ⚠️ |
-| Infiltration | 0.67 ⚠️ |
+| Web SQL Injection | 0.44 |
+| Web XSS | 0.46 |
+| Infiltration | 0.67 |
 
 > Rare classes (SQL Injection: 21 training samples, Heartbleed: 11 training samples) remain the biggest challenge. Addressed in Sem 7 via additional datasets and SHAP-guided feature analysis.
 
 ---
 
 ## 9. Inference Pipeline (Two-Stage)
+### Overview
 
+![image](IntrusionIQ%20Hriday.png "Pipeline Overview")
 ### Stage 1 — Parallel OR Ensemble
 
 Every incoming network flow is evaluated by **two detectors simultaneously**:
 
 **Path A — Voting Ensemble (known attack detection)**
 ```
-RF.predict_proba()[:, 1]  \
+RF.predict_proba()[:, 1]  
 XGB.predict_proba()[:, 1]  → average → threshold 0.50 → ATTACK / BENIGN
-MLP.predict()[:, 0]       /
+MLP.predict()[:, 0]       
 ```
 
 **Path B — Isolation Forest (zero-day / novel attack detection)**
